@@ -4,6 +4,7 @@ import org.testng.annotations.Test;
 
 import java.net.*;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.testng.Assert.*;
 
@@ -24,6 +25,17 @@ public class SimpleUrlTest {
         assertEquals(url1.toString(), model);
         final UrlBuilder ub2 = UrlBuilder.fromUrl(new URL(model));
         assertEquals(ub2.userInfo, userInfo);
+    }
+
+    @Test
+    public void testConditional() throws Exception {
+        final UrlBuilder ub1 = UrlBuilder.empty().withScheme("https");
+        final UrlBuilder ub2 = ub1.conditional(
+                (x) -> !x.queryParameters.containsKey("foo"),
+                (y) -> y.addParameter("foo", "bar"))
+                .withHost("host");
+        assertEquals(ub2.queryParameters.get("foo"), Collections.singletonList("bar"));
+        assertEquals(ub2.hostName, "host");
     }
 
     @Test

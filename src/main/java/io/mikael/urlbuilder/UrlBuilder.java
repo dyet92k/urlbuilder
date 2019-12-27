@@ -24,6 +24,8 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -428,6 +430,32 @@ public final class UrlBuilder {
      */
     public UrlBuilder withFragment(final String fragment) {
         return of(decoder, encoder, scheme, userInfo, hostName, port, path, queryParametersMultimap, fragment);
+    }
+
+    /**
+     * Allows for conditional operations in a builder chain. Could be written as if/else on the top level.
+     */
+    public UrlBuilder conditional(final Predicate<UrlBuilder> iff, final Function<UrlBuilder, UrlBuilder> thenn) {
+        if (iff.test(this)) {
+            return thenn.apply(this);
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Allows for conditional operations in a builder chain. Could be written as if/else on the top level.
+     */
+    public UrlBuilder conditional(final Predicate<UrlBuilder> iff,
+                                  final Function<UrlBuilder, UrlBuilder> thenn,
+                                  final Function<UrlBuilder, UrlBuilder> elss)
+    {
+
+        if (iff.test(this)) {
+            return thenn.apply(this);
+        } else {
+            return elss.apply(this);
+        }
     }
 
 }
